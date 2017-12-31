@@ -13,7 +13,6 @@ logger = logging.getLogger("coinAnalyzer")
 
 
 class CoinOne(metaclass=ABCMeta):
-    URL = 'https://api.coinone.co.kr/'
     ACCESS_TOKEN = ''
     SECRET_KEY = ''
 
@@ -28,11 +27,15 @@ class CoinOne(metaclass=ABCMeta):
     def getPayLoad(self):
         pass
 
+    @abstractclassmethod
+    def getMethod(self):
+        pass
+
     def getFullPayLoad(self):
         fullPayload = {}
         fullPayload.update(self.getPayLoad())
         fullPayload.update({
-            "access_token": self.ACCESS_TOKEN,
+            'access_token': self.ACCESS_TOKEN,
         })
         return fullPayload
 
@@ -55,7 +58,7 @@ class CoinOne(metaclass=ABCMeta):
             'X-COINONE-SIGNATURE': self.get_signature(encoded_payload, self.SECRET_KEY)
         }
         http = httplib2.Http()
-        response, content = http.request(self.URL, 'GET', headers=headers, body=encoded_payload)
+        ( response, content ) = http.request(self.URL, self.getMethod(), headers=headers, body=encoded_payload)
         return content
 
     def get_result(self):
